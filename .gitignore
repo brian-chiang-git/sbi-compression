@@ -8,3 +8,10 @@ wheels/
 
 # Virtual environments
 .venv
+.venv-sims
+.venv-dev
+venv_guide.md
+
+# Miscellaneous
+sbi_lens_sims.ipynb
+sbi_lens_sims/

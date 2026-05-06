@@ -1,27 +1,42 @@
 [project]
-name = "sbi-compression"
+name = "sbi_compression"
 authors = [
     {name = "Brian Chiang", email = "brianchiangycc@gmail.com"}
 ]
 version = "0.1.0"
 description = "Euclidean and spherical compression for SBI"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.11"
 dependencies = [
+    "jax>=0.10.0",
     "numpy>=2.4.4",
 ]
 
-[project.scripts]
+[project.optional-dependencies]
+ml = [
+    "scipy>=1.16",
+    "PyYAML",
+]
+dev = [
+    "pytest>=8.0",
+]
+docs = [
+    "sphinx",
+]
 
+[project.scripts]
+sbi_compression = "sbi_compression.cli:main"
 
 [build-system]
 requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [tool.setuptools.packages.find]
 where = ["src"]
-include = ["compression*"]
+include = ["sbi_compression*"]
 exclude = ["tests*", "docs*"]
 
 
