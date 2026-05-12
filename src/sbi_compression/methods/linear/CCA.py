@@ -1,7 +1,7 @@
 import jax.numpy as jnp
 import jax.linalg as jla
 from jax import jit, vmap
-from methods.data import dataset_shapes, flatten_features   
+from ..data import dataset_shapes, flatten_features   
 
 def CCA(data1, data2):
     """
@@ -61,8 +61,8 @@ def CCA(data1, data2):
 
     # Implemented following the method in https://github.com/98minsu/CosmoCompression/blob/main/notebook.ipynb
     # cov_cca is composed of the covariance matrices of data_p and data_t, and the cross-covariance matrix between data_p and data_t.
-    #[[ cov_p    , cov_pt ],
-    # [ cov_pt.T , cov_t  ]]
+    # [[ cov_p    , cov_pt ],
+    #  [ cov_pt.T , cov_t  ]]
     cov_cca = jnp.cov(data_p.T, data_t.T)
     cov_p = cov_cca[:p_dim, :p_dim]
     cov_t = cov_cca[p_dim:, p_dim:]

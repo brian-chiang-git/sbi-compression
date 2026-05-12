@@ -2,7 +2,7 @@ import jax.numpy as jnp
 import jax 
 from jax.dtypes
 
-def dataset_shape(dataset) -> tuple(int, tuple):
+def dataset_shape(dataset) -> tuple(jax.Array, jax.Array, jax.Array):
     """
     Dataset shape utility function.
 
