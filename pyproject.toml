@@ -8,8 +8,14 @@ description = "Euclidean and spherical compression for SBI"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
+    "equinox>=0.13.8",
+    "flax>=0.12.7",
+    "ipykernel>=7.2.0",
     "jax>=0.10.0",
     "numpy>=2.4.4",
+    "optax>=0.2.8",
+    "torch>=2.12.0",
+    "tqdm>=4.67.3",
 ]
 
 [project.optional-dependencies]
