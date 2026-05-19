@@ -7,6 +7,8 @@ This project is organized as a Python package that can be imported directly and 
 
 ```
 sbi_compression/
+    examples/
+        ... # notebooks for prototyping and testing
     src/
         sbi_compression/
             __init__.py
@@ -16,18 +18,11 @@ sbi_compression/
                 base.py                  # compressor api
                 utils.py                 # utilities e.g. find data dimensions
                 linear/
-                    pca.py               # JAX PCA implementation
-                    cca.py               # JAX CCA implementation
-                    moped.py             # JAX MOPED implementation
-                ml/
-                    autoencoder.py       # Equinox autoencoder implementation   
-                    flow_compressor.py   # Equinox ?
-            data/
-                loaders.py
-                transforms.py
-            eval/
-                metrics.py
-                validation.py
+                    PCA.py               # JAX PCA implementation
+                    CCA.py               # JAX CCA implementation
+                neural/
+                    Encoder.py           # ?
+                    FlowCompressor.py    # ?
             io/
                 save_load.py
             config/
@@ -101,10 +96,3 @@ Avoid exporting every internal implementation detail.
 - contract tests to verify every compressor follows the same interface
 - CLI integration tests for command behavior and file output
 - small synthetic cosmology fixtures for deterministic tests
-
-## Suggested Next Steps
-
-1. Create the `src/sbi_compression` package skeleton around the existing `__init__.py`.
-2. Add a minimal `api.py` and `cli.py` wired through `project.scripts` in `pyproject.toml`.
-3. Add one linear method and one ML method under a shared base interface.
-4. Add `test_api.py` and `test_cli.py` first, then extend method-specific tests.
