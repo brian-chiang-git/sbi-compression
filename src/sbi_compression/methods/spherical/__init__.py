@@ -1,1 +1,0 @@
-"""Spherical compression methods."""
