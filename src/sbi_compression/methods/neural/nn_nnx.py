@@ -7,7 +7,7 @@ from flax import nnx
 
 import numpy as np
 from math import prod
-from typing import Callable
+from typing import Callable, Sequence
 
 class MLP(nnx.Module):
     def __init__(self,

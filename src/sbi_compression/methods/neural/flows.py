@@ -10,7 +10,8 @@ import distrax
 import flax
 from flax import nnx
 
-from bijectors import ConditionalChain, ConditionalMaskedCoupling, ConditionalInverse, ConditionalTransformed 
+from .bijectors import ConditionalChain, ConditionalMaskedCoupling, ConditionalInverse, ConditionalTransformed 
+from .nn_nnx import MLP     
 
 class Conditioner(nnx.Module):
     def __init__(self,

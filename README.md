@@ -15,24 +15,18 @@ sbi_compression/
             api.py
             cli.py
             methods/
-                base.py                  # compressor api
-                utils.py                 # utilities e.g. find data dimensions
+                data.py                 
+                utils.py                 
                 linear/
-                    PCA.py               # JAX PCA implementation
-                    CCA.py               # JAX CCA implementation
+                    PCA.py              
+                    CCA.py             
                 neural/
-                    Encoder.py           # ?
-                    FlowCompressor.py    # ?
-            io/
-                save_load.py
-            config/
-                schema.py
+                    nn_eqx.py
+                    nn_nnx.py
+                    bijectors.py
+                    flows.py
+                    AEncoderFlow.py    
     tests/
-        test_api.py
-        test_cli.py
-        methods/
-            linear/
-            ml/
     examples/
         quickstart.py
     docs/
