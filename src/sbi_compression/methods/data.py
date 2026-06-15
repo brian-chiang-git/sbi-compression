@@ -1,8 +1,7 @@
 import jax.numpy as jnp
 import jax 
-from jax.dtypes
 
-def dataset_shape(dataset) -> tuple(jax.Array, jax.Array, jax.Array):
+def dataset_shapes(dataset) -> tuple[int, tuple[int, ...]]:
     """
     Dataset shape utility function.
 
@@ -55,10 +54,7 @@ def flatten_features(dataset):
     """
     if not isinstance(dataset, jax.Array):
         dataset = jnp.asarray(dataset)
-    if len(dataset.shape) == 2:
-        return dataset
-    elif len(dataset.shape) == 3:
-        n_samples = dataset.shape[0]
-        return dataset.reshape(n_samples, -1)
+    if len(dataset.shape) >= 2:
+        return dataset.reshape(dataset.shape[0], -1)
     else:
-        raise ValueError("Input data must be 1D or 2D array.")
+        raise ValueError(f"Input data must have at least 2 dimensions (samples, ...). Got shape {dataset.shape}")
