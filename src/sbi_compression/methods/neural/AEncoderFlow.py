@@ -75,3 +75,17 @@ class AutoencoderFlow(nnx.Module):
         assert x.shape[-len(self.input_shape):] == self.input_shape # Make sure the input shape matches the encoder, assume batch first
         x = self.encoder(x)
         return x
+    
+    def mode(self, mode: Literal['train_encoder', 'train_flow', 'train_all', 'eval']) -> None:
+        if mode == 'train_encoder':
+            self.encoder.train()
+            self.flow.eval()
+        elif mode == 'train_flow':
+            self.encoder.eval()
+            self.flow.train()
+        elif mode == 'train_all':
+            self.encoder.train()
+            self.flow.train()
+        elif mode == 'eval':
+            self.encoder.eval()
+            self.flow.eval()
