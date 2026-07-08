@@ -77,3 +77,76 @@ def train_model(model,
                 test_steps.append(step)
                 print(f"Step {step:3d} ({(step*BATCH_SIZE)/train_size:.1f} epoch) | Train Loss: {train_loss:.6f} | Test Loss: {test_loss:.6f}")
     print("Training completed.")
+
+
+import sys
+import types
+import importlib
+
+def universal_flax_nnx_shim():
+    """
+    Ensures absolute cross-compatibility between legacy (experimental/0.10) 
+    and modern (0.12+) Flax NNX architectures at runtime.
+    """
+    try:
+        # 1. Inspect the currently installed Flax version
+        flax_spec = importlib.util.find_spec("flax")
+        if flax_spec is None:
+            print("Flax is not installed in this environment. Skipping shim.")
+            return
+            
+        flax = importlib.import_module("flax")
+        flax_version = getattr(flax, "__version__", "0.0.0")
+        major_minor = tuple(map(int, flax_version.split(".")[:2]))
+
+        # 2. If modern Flax (>= 0.11), map old paths to new objects
+        if major_minor >= (0, 11):
+            if not hasattr(flax, "nnx"):
+                print("Modern Flax detected but 'nnx' module missing.")
+                return
+                
+            nnx = flax.nnx
+            
+            # Create a virtual 'flax.nnx.nnx.structures' module
+            if "flax.nnx.nnx.structures" not in sys.modules:
+                mock_structures = types.ModuleType("flax.nnx.nnx.structures")
+                mock_structures.List = getattr(nnx, "List", list)
+                mock_structures.Dict = getattr(nnx, "Dict", dict)
+                sys.modules["flax.nnx.nnx.structures"] = mock_structures
+            
+            # Map top level 'flax.nnx.nnx' fallback
+            if "flax.nnx.nnx" not in sys.modules:
+                sys.modules["flax.nnx.nnx"] = nnx
+                
+            # Create a virtual 'flax.experimental.nnx.nnx.structures' module
+            if "flax.experimental.nnx.nnx.structures" not in sys.modules:
+                mock_exp = types.ModuleType("flax.experimental.nnx.nnx.structures")
+                mock_exp.List = getattr(nnx, "List", list)
+                mock_exp.Dict = getattr(nnx, "Dict", dict)
+                sys.modules["flax.experimental.nnx.nnx.structures"] = mock_exp
+                
+            print(f"Modern Flax ({flax_version}) detected: Legacy NNX shim applied successfully.")
+
+        # 3. If legacy Flax (< 0.11), map new paths to old objects
+        else:
+            # Check if using the older 0.10 native setup or the 0.8 experimental setup
+            try:
+                from flax.nnx.nnx import structures as legacy_structures
+                nnx_module = importlib.import_module("flax.nnx.nnx")
+            except ImportError:
+                try:
+                    from flax.experimental.nnx.nnx import structures as legacy_structures
+                    nnx_module = importlib.import_module("flax.experimental.nnx.nnx")
+                except ImportError:
+                    print("⚠️ Older Flax detected but internal NNX components could not be resolved.")
+                    return
+            
+            # Expose 'flax.nnx' globally so modern code calling `from flax import nnx` works seamlessly
+            if not hasattr(flax, "nnx"):
+                setattr(flax, "nnx", nnx_module)
+                sys.modules["flax.nnx"] = nnx_module
+                
+            print(f"🛰️ Legacy Flax ({flax_version}) detected: Modern NNX forwarding shim applied successfully.")
+
+    except Exception as e:
+        print(f"❌ Critical failure applying universal Flax NNX shim: {e}")
