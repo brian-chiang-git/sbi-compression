@@ -1,4 +1,4 @@
-[project]
+`[project]
 name = "sbi_compression"
 authors = [
     {name = "Brian Chiang", email = "brianchiangycc@gmail.com"}
@@ -13,7 +13,7 @@ dependencies = [
     "flax==0.10.2",
     "getdist>=1.7.7",
     "ipykernel>=7.2.0",
-    "jax<=0.4.38",
+    "jax<=0.4.38", # jax supports numpy release for 24 months since release, numpy 1.26.4 was released in 2024-02-06, so it will be supported until 2026-02-06 
     "matplotlib>=3.10.9",
     "numpy==1.26.4",
     "numpyro",
@@ -36,7 +36,7 @@ dev = [
 docs = [
     "sphinx",
 ]
-
+`
 [project.scripts]
 sbi_compression = "sbi_compression.cli:main"
 

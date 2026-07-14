@@ -1,0 +1,125 @@
+# devel(development), fully featured image required since we use custom C++ compilers e.g. g++ and cmake in s2ai and s2fft
+# runtime image is smaller and faster to download, can be used if we use standard ML packages e.g. pytorch, tensorflow, jax
+Bootstrap: docker
+From: nvcr.io/nvidia/cuda:12.6.3-devel-ubuntu22.04 
+
+# Single .def file for both x86_64 and aarch64 (NVIDIA GH200 Grace Hopper).
+# Architecture is detected at build time via `uname -m`; the CUDA base image
+# is multi-arch on NGC and will resolve to the correct layer automatically.
+#
+# Build (native, on either arch):
+#   apptainer build spherical_inference_container.sif spherical_inference_container.def
+#
+# Cross-build aarch64 from an x86_64 host (requires QEMU + binfmt_misc):
+#   apptainer build --arch arm64 spherical_inference_container.sif spherical_inference_container.def
+%files
+    # sbi-compression /opt/sbi-compression
+%environment
+    export PATH=/opt/venv/bin:/usr/local/cuda/bin:$PATH
+    export LD_LIBRARY_PATH=/usr/local/cuda/lib64:$LD_LIBRARY_PATH
+    # Let JAX/XLA find the CUDA installation
+    export XLA_FLAGS="--xla_gpu_cuda_data_dir=/usr/local/cuda"
+    export CUDA_HOME=/usr/local/cuda
+%post
+    export DEBIAN_FRONTEND=noninteractive
+    export PIP_ROOT_USER_ACTION=ignore
+    # Detect build architecture (x86_64 or aarch64)
+    ARCH=$(uname -m) 
+    echo ">>> Building for architecture: ${ARCH}"
+    # You can use echo "VAR=value" >> ~/.bashrc to permanently save a variable to your active environment file, but you will always have to run source ~/.bashrc right after it to update the shell config
+    # export is temporary, does not premanently write into the shell script
+    # > completely erases a file's existing content and replaces it with your new text, while >> safely adds your new text to the very bottom of the file without changing anything else.
+    # ---- System packages (build-time only) -----------------------------
+    apt-get update && apt-get install -y \
+        wget \
+        curl \
+        git \
+        cmake \
+        ninja-build \
+        g++ \
+        software-properties-common \
+        pkg-config \
+        libproj-dev proj-bin libgeos-dev \
+        libfreetype6-dev libpng-dev \
+        libopenblas-dev gfortran
+    # ---- uv via curl ----------------------------------------------------
+    export UV_INSTALL_DIR=/usr/local/bin
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    unset UV_INSTALL_DIR
+    # ---- Python 3.13 from deadsnakes PPA --------------------------------
+    add-apt-repository -y ppa:deadsnakes/ppa # -y for default yes to all pop up 
+    apt-get update && apt-get install -y \
+        python3.13 \
+        python3.13-dev \
+        python3.13-venv
+    rm -rf /var/lib/apt/lists/* # remove apt-get update packages list
+    # ---- Virtualenv ----------------------------------------------------
+    python3.13 -m venv /opt/venv
+    export PATH=/opt/venv/bin:$PATH # build time path for any cammand
+    echo "export PATH=/opt/venv/bin:\$PATH" >> /environment # add path to container runtime for any command
+    # pip install --no-cache-dir --upgrade pip "setuptools==78.1.1"
+    # ---- JAX with CUDA 12 support --------------------------------------
+    # jax[cuda12] ships bundled CUDA libs and has wheels for both archs.
+    # pip install --no-cache-dir "jax[cuda12]==0.4.38" "jaxlib==0.4.38"
+    # ---- PyTorch with CUDA (arch-aware) --------------------------------
+    # s2fft depends on torch. On aarch64 the default PyPI wheel is CPU-only,
+    # so we always install from PyTorch's CUDA wheel index.
+    # cu126 matches the CUDA 12.6 base image and supports Python 3.13.
+    # x86_64 cu126 wheels: torch-*+cu126-cp*-linux_x86_64.whl
+    # aarch64 cu126 wheels: torch-*+cu126-cp*-linux_aarch64.whl
+    # pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cu126
+    # ---- Python packages required by spherical_sim_NUTS.py -------------
+    # pip install --no-cache-dir -c /opt/constraints.txt \
+        # matplotlib \
+        # transformcl \
+        # pympler \
+        # getdist \
+        # jax-cosmo \
+        # numpyro \
+        # cosmopower-jax \
+        # tqdm \
+        # Cartopy \
+        # healpy
+    # ---- Local codebases -----------------------------------------------
+    # s2fft: has C++ extensions (nanobind/scikit-build-core)
+    # pip install --no-cache-dir -c /opt/constraints.txt /opt/codes/s2fft # -c refers to constraints requires constraints.txt file
+    # pip install --no-cache-dir -c /opt/constraints.txt /opt/codes/glass
+    # ---- Remove build-only packages ------------------------------------
+    apt-get remove --purge -y \
+        cmake ninja-build g++ git wget \
+        python3.13-dev software-properties-common
+    apt-get autoremove --purge -y
+    apt-get clean
+    rm -rf /var/lib/apt/lists/*
+    # ---- Remove build-only files ---------------------------------------
+    # rm -rf /opt/codes /opt/constraints.txt
+%runscript
+    exec python "$@"
+    # Automatically register the kernel to the host user's home directory upon boot
+    if [ -f "/opt/venv/bin/activate" ]; then
+        source /opt/venv/bin/activate
+        python3 -m ipykernel install --user --name sbi-container-3.13 --display-name "Python 3.13 (SBI Container)" --profile="" > /dev/null 2>&1
+    fi
+    exec /bin/bash "$@"
+%labels
+    Author       brianchiangycc@gmail.com
+    Project      sbi-compression
+    Base         nvcr.io/nvidia/cuda:12.6.3-devel-ubuntu22.04 (multi-arch)
+    Architecture x86_64 and aarch64 (NVIDIA GH200 Grace Hopper)
+    Python       3.13
+    JAX          cuda12
+    PyTorch      cu126
+%help
+    Container with Python 3.13, JAX (CUDA 12), and PyTorch (CUDA).
+    Supports both x86_64 and aarch64 (NVIDIA GH200 Grace Hopper).
+    Architecture is detected automatically at build time.
+      glass  (/opt/codes/glass)
+      s2fft  (/opt/codes/s2fft)
+    Build natively (works on either arch):
+      apptainer build sbi_comp_sandbox.sif sbi_comp_sandbox.def
+    Cross-build aarch64 from x86_64 host (requires QEMU + binfmt_misc):
+      apptainer build --arch arm64 sbi_comp_sandbox.sif sbi_comp_sandbox.def
+    Run interactively with GPU:
+      apptainer shell --nv sbi_comp_sandbox.sif
+    Run a script:
+      apptainer exec --nv sbi_comp_sandbox.sif python my_script.py
