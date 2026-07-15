@@ -4,6 +4,8 @@ from jaxtyping import Array
 
 import flax
 from flax import nnx
+# from sbi_compression.methods.utils import universal_flax_nnx_shim
+# universal_flax_nnx_shim()
 import jax.numpy as jnp
 import distrax
 from math import prod

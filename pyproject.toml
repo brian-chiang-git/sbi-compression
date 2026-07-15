@@ -1,4 +1,4 @@
-`[project]
+[project]
 name = "sbi_compression"
 authors = [
     {name = "Brian Chiang", email = "brianchiangycc@gmail.com"}
@@ -6,24 +6,31 @@ authors = [
 version = "0.1.0"
 description = "Euclidean and spherical compression for SBI"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.13"
 dependencies = [
-    "distrax>=0.1.5",
+    "distrax>=0.1.8",
     "equinox>=0.13.8",
-    "flax==0.10.2",
+    "flax>=0.12.7",
     "getdist>=1.7.7",
     "ipykernel>=7.2.0",
-    "jax<=0.4.38", # jax supports numpy release for 24 months since release, numpy 1.26.4 was released in 2024-02-06, so it will be supported until 2026-02-06 
+    "jax>=0.10.0",
     "matplotlib>=3.10.9",
-    "numpy==1.26.4",
-    "numpyro",
-    "optax<=0.2.2",
+    "numpy==2.4.6",
+    "numpyro>=0.21.0",
+    "optax>=0.2.8",
     "sbi>=0.26.1",
     "seaborn>=0.13.2",
     "torch>=2.12.0",
     "tqdm>=4.67.3",
     "s2ai @ git+https://github.com/astro-informatics/s2ai.git",
 ]
+
+[tool.uv]
+no-binary-package = ["s2fft"] # override s2fft cpython 3.12 wheel requirement
+override-dependencies = [
+    "numpy>=2.3.0",
+    "healpy>=1.18.0",
+    ] # override s2ai requirement of numpy==1.26.4
 
 [project.optional-dependencies]
 ml = [
@@ -36,7 +43,7 @@ dev = [
 docs = [
     "sphinx",
 ]
-`
+
 [project.scripts]
 sbi_compression = "sbi_compression.cli:main"
 

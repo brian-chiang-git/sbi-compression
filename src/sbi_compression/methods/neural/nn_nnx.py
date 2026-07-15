@@ -5,9 +5,13 @@ import jax.tree_util as jtu
 import flax
 from flax import nnx 
 
+# from sbi_compression.methods.utils import universal_flax_nnx_shim
+# universal_flax_nnx_shim()
+
 import numpy as np
 from math import prod
 from typing import Callable, Sequence
+
 
 class MLP(nnx.Module):
     def __init__(self,

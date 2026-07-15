@@ -9,6 +9,8 @@ import math
 import distrax
 import flax
 from flax import nnx
+# from sbi_compression.methods.utils import universal_flax_nnx_shim
+# universal_flax_nnx_shim()
 
 from .bijectors import ConditionalChain, ConditionalMaskedCoupling, ConditionalInverse, ConditionalTransformed 
 from .nn_nnx import MLP     
