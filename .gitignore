@@ -16,3 +16,10 @@ venv_guide.md
 sbi_lens_sims.ipynb
 sbi_lens_sims/
 examples/MNIST/
+
+# Container files
+*.sif
+*.img
+sandbox_overlay.img
+sbi_container.sifcore
+**/core
