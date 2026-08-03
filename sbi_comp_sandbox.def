@@ -20,6 +20,9 @@ From: nvcr.io/nvidia/cuda:12.6.3-devel-ubuntu22.04
     # Let JAX/XLA find the CUDA installation
     export XLA_FLAGS="--xla_gpu_cuda_data_dir=/usr/local/cuda"
     export CUDA_HOME=/usr/local/cuda
+    # export PATH=/opt/venv/bin:$PATH
+    # If your venv is at /opt/venv, point the linker to the pip-installed NVIDIA libs
+    # export LD_LIBRARY_PATH=/opt/venv/lib/python3.13/site-packages/nvidia/cusparse/lib:/opt/venv/lib/python3.13/site-packages/nvidia/cublas/lib:/opt/venv/lib/python3.13/site-packages/nvidia/cufft/lib:/opt/venv/lib/python3.13/site-packages/nvidia/cusolver/lib:/opt/venv/lib/python3.13/site-packages/nvidia/cuda_runtime/lib:$LD_LIBRARY_PATH
 %post
     export DEBIAN_FRONTEND=noninteractive
     export PIP_ROOT_USER_ACTION=ignore
@@ -36,7 +39,7 @@ From: nvcr.io/nvidia/cuda:12.6.3-devel-ubuntu22.04
         git \
         cmake \
         ninja-build \
-        g++ \
+        g++ \`
         software-properties-common \
         pkg-config \
         libproj-dev proj-bin libgeos-dev \

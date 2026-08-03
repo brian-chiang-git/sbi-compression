@@ -1,0 +1,19 @@
+HOST CLUSTER DISK                          INSIDE APPTAINER CONTAINER
+─────────────────                          ──────────────────────────
+/ (Host Root)                              / (Container Root)
+│                                          │
+├── scratch/  ───────────────────────────> ├── scratch/              (-B /scratch:/scratch)
+├── projects/ ───────────────────────────> ├── projects/             (-B /projects:/projects)
+│                                          │
+├── opt/ (Host Linux OS files)             ├── opt/
+│                                          │   ├── venv/              (Container's internal Python)
+│                                          │   └── sbi-compression/ ─┐ (-B .../sbi-compression:/opt/sbi-compression)
+│                                          │                         │
+└── home/                                  ├── home/                 │
+    └── u6pf/                              │   └── u6pf/             │
+        └── brianycc.u6pf/                 │       └── brianycc.u6pf/│
+            └── sbi-compression/ ──────────┼─────────────────────────┴─> BOTH point to the EXACT
+                ├── .s2fft_venv/          │                             SAME physical folder on host!
+                ├── main.py                │
+                ├── sandbox_overlay.img    │
+                └── sbi_container.sif      └── [bin, usr, lib, etc.] (Container's isolated Ubuntu OS)
