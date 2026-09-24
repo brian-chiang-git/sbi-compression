@@ -20,7 +20,7 @@ dependencies = [
     "optax>=0.2.8",
     "sbi>=0.26.1",
     "seaborn>=0.13.2",
-    "torch>=2.12.0",
+    "torch==2.13.0", # isambard uses cuda 12.7
     "tqdm>=4.67.3",
     "s2ai @ git+https://github.com/astro-informatics/s2ai.git",
 ]
@@ -31,6 +31,16 @@ override-dependencies = [
     "numpy>=2.3.0",
     "healpy>=1.17.0",
     ] # override s2ai requirement of numpy==1.26.4
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu126" }]
+torchvision = [{ index = "pytorch-cu126" }]
+torchaudio = [{ index = "pytorch-cu126" }]
 
 [project.optional-dependencies]
 ml = [

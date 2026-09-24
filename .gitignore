@@ -17,6 +17,10 @@ venv_guide.md
 sbi_lens_sims.ipynb
 sbi_lens_sims/
 examples/MNIST/
+# examples/posterior_samples/
+# examples/compressed_data/
+slurm_logs/
+sbi-logs
 
 # Container files
 *.sif
