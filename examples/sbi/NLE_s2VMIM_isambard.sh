@@ -18,7 +18,7 @@ apptainer exec --nv --overlay sandbox_overlay.img:ro \
     -B /scratch:/scratch \
     -B /projects:/projects \
     sbi_container.sif /opt/venv/bin/python \
-    examples/NLE_s2.py \
+    examples/sbi/NLE_s2.py \
     --compression_types "'s2VMIM_L1500_augpool'" \
     --compression_directories "'/projects/u6pf/brianycc/spherical_maps/map_compression_L1500_mwss_samples_augmented_pooled_compressed/s2VMIM_L1500_98304N_9000steps_32batch_0.001lr_4transforms_8bins.pkl'" \
     --n_samples 98304

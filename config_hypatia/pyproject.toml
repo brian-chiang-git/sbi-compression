@@ -1,0 +1,74 @@
+[project]
+name = "sbi_compression"
+authors = [
+    {name = "Brian Chiang", email = "brianchiangycc@gmail.com"}
+]
+version = "0.1.0"
+description = "Euclidean and spherical compression for SBI"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "distrax>=0.1.8",
+    "equinox>=0.13.8",
+    "flax>=0.12.7",
+    "getdist>=1.7.7",
+    "ipykernel>=7.2.0",
+    "jax[cuda12]>=0.10.0",
+    "matplotlib>=3.10.9",
+    "numpy==2.4.6",
+    "numpyro>=0.21.0",
+    "optax>=0.2.8",
+    "sbi>=0.26.1",
+    "seaborn>=0.13.2",
+    "torch==2.13.0", # isambard uses cuda 12.7, hypatia 12.2
+    "tqdm>=4.67.3",
+    "s2ai @ git+https://github.com/astro-informatics/s2ai.git",
+]
+
+[tool.uv]
+no-binary-package = ["s2fft"] # override s2fft cpython 3.12 wheel requirement
+override-dependencies = [
+    "numpy>=2.3.0",
+    "healpy>=1.17.0",
+    ] # override s2ai requirement of numpy==1.26.4
+
+[[tool.uv.index]]
+name = "pytorch-cu126"
+url = "https://download.pytorch.org/whl/cu126"
+explicit = true
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu126" }]
+torchvision = [{ index = "pytorch-cu126" }]
+torchaudio = [{ index = "pytorch-cu126" }]
+
+[project.optional-dependencies]
+ml = [
+    "scipy>=1.16",
+    "PyYAML",
+]
+dev = [
+    "pytest>=8.0",
+]
+docs = [
+    "sphinx",
+]
+`
+[project.scripts]
+sbi_compression = "sbi_compression.cli:main"
+
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+package-dir = {"" = "../src"}
+
+[tool.setuptools.packages.find]
+where = ["../src"]
+include = ["sbi_compression*"]
+exclude = ["tests*", "docs*"] 
+
+
+
+

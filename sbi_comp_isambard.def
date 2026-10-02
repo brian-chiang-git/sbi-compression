@@ -39,7 +39,7 @@ From: nvcr.io/nvidia/cuda:12.6.3-devel-ubuntu22.04
         git \
         cmake \
         ninja-build \
-        g++ \`
+        g++ \
         software-properties-common \
         pkg-config \
         libproj-dev proj-bin libgeos-dev \

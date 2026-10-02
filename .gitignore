@@ -28,3 +28,4 @@ sbi-logs
 sandbox_overlay.img
 sbi_container.sifcore
 **/core
+sync_hypatia.log

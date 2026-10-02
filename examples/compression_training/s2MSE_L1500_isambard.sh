@@ -21,7 +21,7 @@ apptainer exec --nv --overlay sandbox_overlay.img:ro \
     -B /scratch:/scratch \
     -B /projects:/projects \
     sbi_container.sif /opt/venv/bin/python \
-    examples/s2MSE_L1500.py \
+    examples/compression_training/s2MSE_L1500.py \
     -lr 1e-3 \
     -tts 0.9 \
     -bs 32 \
